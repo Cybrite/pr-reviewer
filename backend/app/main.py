@@ -5,6 +5,7 @@ import os
 load_dotenv()
 
 from app.core.security import verify_github_signature
+from app.services.github import fetch_pr_diff
 
 app = FastAPI(title = "Algorithmic PR reviewer")
 
@@ -19,7 +20,7 @@ async def github_webhook(request: Request, event: str = Header(None, alias="X-Gi
 
     action = payload.get("action")
 
-    if action not in ["opened", "synchronize"]:
+    if action not in ["opened", "synchronize", "reopened"]:
         return {"status": "ignored", "message": f"Action '{action}' is not handled."}
 
     pr_number = payload["pull_request"]["number"]
